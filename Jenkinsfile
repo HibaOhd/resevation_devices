@@ -50,6 +50,29 @@ pipeline {
                 bat 'echo Deployment simulation...'
             }
         }
+            stage('SonarQube Analysis') {
+        steps {
+            echo '🔎 Analyse SonarQube...'
+            withSonarQubeEnv('SonarQube') {  // Nom du serveur dans Jenkins
+                bat '''
+                    sonar-scanner ^
+                    -Dsonar.projectKey=reservation-app ^
+                    -Dsonar.sources=src ^
+                    -Dsonar.java.binaries=target ^
+                    -Dsonar.host.url=http://localhost:9000
+                '''
+            }
+        }
+    }
+            stage('Quality Gate') {
+        steps {
+            timeout(time: 2, unit: 'MINUTES') {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+    }
+
+
     }
     
     post {
