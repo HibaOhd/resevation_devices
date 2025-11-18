@@ -55,7 +55,7 @@ pipeline {
             echo '🔎 Analyse SonarQube...'
             withSonarQubeEnv('SonarQube') {  // Nom du serveur dans Jenkins
                 bat '''
-                    "${tool 'SonarQube'}/bin/sonar-scanner" ^
+                    "${tool 'SonarScanner'}/bin/sonar-scanner" ^
                     -Dsonar.projectKey=reservation-app ^
                     -Dsonar.sources=src ^
                     -Dsonar.java.binaries=target ^
