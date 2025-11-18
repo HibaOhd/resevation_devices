@@ -50,20 +50,17 @@ pipeline {
                 bat 'echo Deployment simulation...'
             }
         }
-            stage('SonarQube Analysis') {
-        steps {
-            echo '🔎 Analyse SonarQube...'
-            withSonarQubeEnv('SonarScanner') {  // Nom du serveur dans Jenkins
-                bat '''
-                    "${tool 'SonarScanner'}/bin/sonar-scanner" ^
-                    -Dsonar.projectKey=reservation-app ^
-                    -Dsonar.sources=src ^
-                    -Dsonar.java.binaries=target ^
-                    -Dsonar.host.url=http://localhost:9000
-                '''
+         stage('SonarQube Analysis') {
+            steps {
+                dir('backend') {
+                    withSonarQubeEnv('LocalSonar') { // Name of SonarQube server in Jenkins
+                        withCredentials([string(credentialsId: 'SonarToken', variable: 'SONAR_TOKEN')]) {
+                            bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
+                        }
+                    }
+                }
             }
         }
-    }
             stage('Quality Gate') {
         steps {
             timeout(time: 2, unit: 'MINUTES') {
