@@ -53,7 +53,7 @@ pipeline {
             stage('SonarQube Analysis') {
         steps {
             echo '🔎 Analyse SonarQube...'
-            withSonarQubeEnv('SonarQube') {  // Nom du serveur dans Jenkins
+            withSonarQubeEnv('SonarScanner') {  // Nom du serveur dans Jenkins
                 bat '''
                     "${tool 'SonarScanner'}/bin/sonar-scanner" ^
                     -Dsonar.projectKey=reservation-app ^
