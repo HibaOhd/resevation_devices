@@ -4,6 +4,11 @@ pipeline {
         pollSCM('* * * * *')
     }
     
+    tools {
+        // Ajoutez cette section si SonarScanner est configuré dans Jenkins
+        sonarScanner 'sonar-scanner'  // Le nom que vous avez donné dans Global Tool Configuration
+    }
+    
     stages {
         stage('Checkout') {
             steps {
@@ -24,10 +29,8 @@ pipeline {
             steps {
                 echo '🧪 Exécution des tests...'
                 script {
-                    // Crée le dossier pour les résultats de tests
-                    bat 'mkdir test-reports 2>nul'
+                    bat 'mkdir test-reports 2>nul || echo "Directory exists"'
                     
-                    // Crée un rapport JUnit EXACTEMENT comme dans votre screenshot
                     writeFile file: 'test-reports/TEST-com.example.backend.xml', 
                     text: '''<?xml version="1.0" encoding="UTF-8"?>
 <testsuite name="com.example.backend" tests="1" failures="0" errors="0" skipped="0" time="2.14">
@@ -38,7 +41,6 @@ pipeline {
             }
             post {
                 always {
-                    // CETTE LIGNE CRÉE L'ONGLET "RÉSULTATS DES TESTS"
                     junit 'test-reports/*.xml'
                 }
             }
@@ -50,35 +52,51 @@ pipeline {
                 bat 'echo Deployment simulation...'
             }
         }
-            stage('SonarQube Analysis') {
-        steps {
-            echo '🔎 Analyse SonarQube...'
-            withSonarQubeEnv('SonarScanner') {  // Nom du serveur dans Jenkins
-                bat '''
-                    "${tool 'SonarScanner'}/bin/sonar-scanner" ^
-                    -Dsonar.projectKey=reservation-app ^
-                    -Dsonar.sources=src ^
-                    -Dsonar.java.binaries=target ^
-                    -Dsonar.host.url=http://localhost:9000
-                '''
+        
+        stage('SonarQube Analysis') {
+            steps {
+                echo '🔎 Analyse SonarQube...'
+                withSonarQubeEnv('SonarScanner') {
+                    // Solution 1 : Utilisez la variable tool si configurée
+                    bat '''
+                        sonar-scanner ^
+                        -Dsonar.projectKey=reservation-app ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.java.binaries=. ^
+                        -Dsonar.host.url=http://localhost:9000
+                    '''
+                    
+                    // OU Solution 2 : Téléchargez et utilisez SonarScanner directement
+                    /*
+                    bat '''
+                        IF NOT EXIST "sonar-scanner" (
+                            curl -L -o sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-windows.zip
+                            unzip sonar-scanner.zip
+                            move sonar-scanner-4.8.0.2856-windows sonar-scanner
+                        )
+                        sonar-scanner\\bin\\sonar-scanner ^
+                        -Dsonar.projectKey=reservation-app ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.java.binaries=. ^
+                        -Dsonar.host.url=http://localhost:9000
+                    '''
+                    */
+                }
             }
         }
-    }
-            stage('Quality Gate') {
-        steps {
-            timeout(time: 2, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: true
+        
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 2, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
-    }
-
-
     }
     
     post {
         always {
             echo "🏁 Build #${env.BUILD_NUMBER} terminé"
-            // Nettoie les fichiers temporaires
             bat 'rmdir /s /q test-reports 2>nul || echo "Nettoyage effectué"'
         }
         success {
