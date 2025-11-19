@@ -1,6 +1,8 @@
 pipeline {
     agent any
-
+    environment {
+        DOCKER_IMAGE = "hibaohd/myapp"
+    }
     tools {
         jdk 'jdk17'
         maven 'maven'
@@ -28,6 +30,24 @@ pipeline {
                         withCredentials([string(credentialsId: 'SonarToken', variable: 'SONAR_TOKEN')]) {
                             bat "mvn sonar:sonar -Dsonar.login=%SONAR_TOKEN%"
                         }
+                    }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub_credentials') {
+                        dockerImage.push()
+                        dockerImage.push('latest')
                     }
                 }
             }
