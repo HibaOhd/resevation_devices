@@ -34,13 +34,22 @@ pipeline {
                 }
             }
         }
-        stage('Build Docker Image') {
+        stage('Build Backend Docker Image') {
             steps {
-                script {
-                    dockerImage = docker.build("${DOCKER_IMAGE}:${BUILD_NUMBER}")
+                dir('backend') {
+                    bat "docker build -t hibaohd/backend:${BUILD_NUMBER} ."
                 }
             }
         }
+        
+        stage('Build Frontend Docker Image') {
+            steps {
+                dir('frontend') {
+                    bat "docker build -t hibaohd/frontend:${BUILD_NUMBER} ."
+                }
+            }
+        }
+
 
         stage('Push Docker Image') {
             steps {
