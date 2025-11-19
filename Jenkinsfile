@@ -53,14 +53,23 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub_credentials') {
-                        dockerImage.push()
-                        dockerImage.push('latest')
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    // Login
+                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+        
+                    // Push backend image
+                    bat "docker tag hibaohd/backend:${BUILD_NUMBER} hibaohd/backend:latest"
+                    bat "docker push hibaohd/backend:${BUILD_NUMBER}"
+                    bat "docker push hibaohd/backend:latest"
+        
+                    // Push frontend image
+                    bat "docker tag hibaohd/frontend:${BUILD_NUMBER} hibaohd/frontend:latest"
+                    bat "docker push hibaohd/frontend:${BUILD_NUMBER}"
+                    bat "docker push hibaohd/frontend:latest"
                 }
             }
         }
+
 
         stage('Archive') {
             steps {
