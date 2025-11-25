@@ -22,6 +22,14 @@ pipeline {
                 }
             }
         }
+       stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    bat 'mvn clean package' 
+                }
+            }
+        }
+
 
         stage('SonarQube Analysis') {
             steps {
