@@ -23,11 +23,13 @@ pipeline {
             }
         }
         stage('Build Frontend') {
-        dir('frontend') {
-            bat "npm install"
-            bat "npm run build"
+            steps {
+                dir('frontend') {
+                    bat 'npm install'
+                    bat 'npm run build'
+                }
+            }
         }
-    }
 
 
 
