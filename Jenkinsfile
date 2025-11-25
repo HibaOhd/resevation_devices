@@ -45,20 +45,21 @@ pipeline {
             }
         }
         stage('Build Backend Docker Image') {
-            steps {
-                dir('backend') {
-                    bat "docker build -t hibaohd/backend:${BUILD_NUMBER} ."
-                }
-            }
+    steps {
+        dir('backend') {
+            bat "docker build --no-cache -t hibaohd/backend:${BUILD_NUMBER} ."
         }
+    }
+}
+
+stage('Build Frontend Docker Image') {
+    steps {
+        dir('frontend') {
+            bat "docker build --no-cache -t hibaohd/frontend:${BUILD_NUMBER} ."
+        }
+    }
+}
         
-        stage('Build Frontend Docker Image') {
-            steps {
-                dir('frontend') {
-                    bat "docker build -t hibaohd/frontend:${BUILD_NUMBER} ."
-                }
-            }
-        }
 
 
         stage('Push Docker Image') {
