@@ -22,13 +22,13 @@ pipeline {
                 }
             }
         }
-       stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    bat 'mvn clean package' 
-                }
-            }
+        stage('Build Frontend') {
+        dir('frontend') {
+            bat "npm install"
+            bat "npm run build"
         }
+    }
+
 
 
         stage('SonarQube Analysis') {
