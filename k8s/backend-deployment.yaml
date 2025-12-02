@@ -14,6 +14,13 @@ spec:
     spec:
       containers:
         - name: backend
-          image: hibaohd/backend:latest   # change this
+          image: hibaohd/backend:latest
           ports:
-            - containerPort: 8080        # change if backend uses another port
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres-service:5432/mydatabase
+            - name: SPRING_DATASOURCE_USERNAME
+              value: myuser
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: mypassword
