@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: backend-service
 spec:
-  type: ClusterIP
+  type: NodePort        # Change from ClusterIP
   selector:
     app: backend
   ports:
-    - port: 8080       # port interne du service Kubernetes
-      targetPort: 8080 # port exposé par ton backend dans Docker
+    - port: 8080        # Service port
+      targetPort: 8080  # Pod port
+      nodePort: 30081   # Node port > 30000
