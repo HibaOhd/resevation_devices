@@ -17,10 +17,11 @@ spec:
           image: hibaohd/backend:latest
           ports:
             - containerPort: 8080
-          env:
+      env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://postgres-service:5432/mydatabase
             - name: SPRING_DATASOURCE_USERNAME
               value: myuser
             - name: SPRING_DATASOURCE_PASSWORD
               value: mypassword
+
