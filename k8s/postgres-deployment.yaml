@@ -11,7 +11,7 @@ spec:
     metadata:
       labels:
         app: postgres
-    spec:
+    spec:                      # <--- volumes must be under this spec
       containers:
         - name: postgres
           image: postgres:15
@@ -27,6 +27,6 @@ spec:
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/data
-    volumes:
-      - name: postgres-storage
-        emptyDir: {}   # replace with PersistentVolumeClaim for production
+      volumes:                 # <--- correctly placed here
+        - name: postgres-storage
+          emptyDir: {}         # use PVC for persistence in production
