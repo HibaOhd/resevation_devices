@@ -6,6 +6,7 @@ pipeline {
     tools {
         jdk 'jdk17'
         maven 'maven'
+        nodejs 'Node18'
     }
 
     stages {
