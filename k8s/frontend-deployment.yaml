@@ -15,5 +15,7 @@ spec:
       containers:
         - name: frontend
           image: hibaohd/frontend:latest    # change this
+          imagePullPolicy: IfNotPresent   # <- Add this line
+
           ports:
             - containerPort: 80             # or 3000/4200 etc depending on your app
