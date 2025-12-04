@@ -26,14 +26,14 @@ export class DashboardComponent  implements OnInit {
 
   
   devices: Device[] = [];
-  apiUrl: string = 'http://localhost:8083/api/devices';
+  apiUrl: string = 'http://localhost:30081/api/devices';
   isModalOpen: boolean = false;
   newReservation: any = { startDate: '', endDate: '', userId: '', deviceId: '' };
 
   constructor(private http: HttpClient,private sanitizer: DomSanitizer) {}
 
   getSafeUrl(imageUrl: string): SafeUrl {
-    return this.sanitizer.bypassSecurityTrustUrl('http://localhost:8083/uploads/' + imageUrl);
+    return this.sanitizer.bypassSecurityTrustUrl('http://localhost:30081/uploads/' + imageUrl);
   }
 
   ngOnInit(): void {
@@ -109,7 +109,7 @@ export class DashboardComponent  implements OnInit {
     };
   
     // Proceed with the API request if validation passed
-    this.http.post('http://localhost:8083/api/reservations', reservationData).subscribe(
+    this.http.post('http://localhost:30081/api/reservations', reservationData).subscribe(
       (response) => {
         console.log('Reservation added successfully:', response);
         this.closeModal();
